@@ -42,11 +42,7 @@ class TokenManager {
     return TokenManager.instance
   }
 
-  private setCookie(
-    name: string,
-    value: string,
-    options: CookieOptions = {}
-  ): void {
+  private setCookie(name: string, value: string, options: CookieOptions = {}): void {
     if (typeof document === "undefined") return
 
     const mergedOptions = { ...getDefaultCookieOptions(), ...options }
