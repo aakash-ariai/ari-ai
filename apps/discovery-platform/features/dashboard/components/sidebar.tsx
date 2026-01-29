@@ -2,11 +2,13 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Compass, Calendar, Moon, Sun } from "lucide-react"
+import { Compass, Calendar, LogOut, Moon, Sun } from "lucide-react"
 
 import { cn } from "@workspace/shared/lib/utils"
 import { Button } from "@workspace/shared/components/button"
 import { useTheme } from "@workspace/shared/hooks/use-theme"
+
+import { useLogout } from "@/features/auth"
 
 const navigation = [
   { name: "Discover", href: "/dashboard", icon: Compass },
@@ -16,6 +18,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const { isDark, toggleTheme } = useTheme()
+  const { mutate: logout, isPending: isLoggingOut } = useLogout()
 
   return (
     <aside className="flex h-full w-64 flex-col border-r bg-card">
@@ -43,6 +46,18 @@ export function Sidebar() {
           </Link>
         ))}
       </nav>
+
+      <div className="border-t p-4">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
+          onClick={() => logout()}
+          disabled={isLoggingOut}
+        >
+          <LogOut className="h-4 w-4" />
+          {isLoggingOut ? "Logging out..." : "Logout"}
+        </Button>
+      </div>
     </aside>
   )
 }
