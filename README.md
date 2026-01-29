@@ -82,8 +82,9 @@ pnpm lint
 Copy the example env files and configure:
 
 ```bash
-cp .env.ticketing-platform apps/ticketing-platform/.env.local
-cp .env.discovery-platform apps/discovery-platform/.env.local
+cp .env.example .env
+cp apps/ticketing-platform/.env.example apps/ticketing-platform/.env.local
+cp apps/discovery-platform/.env.example apps/discovery-platform/.env.local
 ```
 
 ## Feature Architecture

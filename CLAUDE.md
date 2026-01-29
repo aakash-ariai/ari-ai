@@ -108,6 +108,24 @@ export function useTickets() {
 - Design tokens in `packages/shared/src/styles/globals.css`
 - OKLCH color space for theme colors
 
+### Authentication
+
+Auth feature is in `features/auth/` with:
+- `useLogin()` - Login mutation, stores tokens, redirects to dashboard
+- `useRegister()` - Registration mutation, redirects to signin
+- `useLogout()` - Logout mutation, clears tokens, redirects to signin
+
+Token management via `@workspace/shared/lib/token-manager`:
+```tsx
+import { tokenManager } from "@workspace/shared/lib/token-manager"
+
+tokenManager.setTokens(accessToken, refreshToken, expiresIn)
+tokenManager.getAccessToken()
+tokenManager.clearTokens()
+```
+
+Middleware in `middleware.ts` handles route protection.
+
 ### Theme (Dark/Light)
 - Add `.dark` class to `<body>` for dark mode
 - Use `useTheme()` hook from `@workspace/shared/hooks/use-theme`
@@ -136,9 +154,31 @@ Tailwind breakpoints: `sm:` (640px), `md:` (768px), `lg:` (1024px), `xl:` (1280p
    - `types/` - API types + UI types (separate interfaces)
    - `hooks/` - React Query hooks (use transformers here)
    - `components/` - UI components (consume transformed data only)
-2. Create `index.ts` - export components, hooks, UI types only
+   - `lib/` - Utilities, validation schemas (optional)
+2. Create `index.ts` files for each subdir AND the feature root
 3. Add route in `app/(dashboard)/{name}/page.tsx`
 4. Add navigation in `features/dashboard/components/sidebar.tsx`
+
+**Index File Pattern** - Every folder needs an `index.ts`:
+```
+features/{name}/
+├── api/
+│   ├── {name}.api.ts
+│   └── index.ts          # export * from "./{name}.api"
+├── components/
+│   ├── {component}.tsx
+│   └── index.ts          # export * from "./{component}"
+├── hooks/
+│   ├── use-{name}.ts
+│   └── index.ts          # export * from "./use-{name}"
+├── transformers/
+│   ├── {name}.transformers.ts
+│   └── index.ts          # export * from "./{name}.transformers"
+├── types/
+│   ├── {name}.types.ts
+│   └── index.ts          # export * from "./{name}.types"
+└── index.ts              # Public exports for the feature
+```
 
 **Important:** Start with dummy data in API files, build UI with transformers. When backend is ready, uncomment real API calls.
 
@@ -164,12 +204,21 @@ Tailwind breakpoints: `sm:` (640px), `md:` (768px), `lg:` (1024px), `xl:` (1280p
 
 ## Environment Variables
 
-Each app uses its own env file at the project root:
-- `.env.ticketing-platform`
-- `.env.discovery-platform`
+Each app has its own `.env.example` file:
+- `.env.example` (root)
+- `apps/ticketing-platform/.env.example`
+- `apps/discovery-platform/.env.example`
+
+Copy to `.env.local` for local development:
+```bash
+cp apps/ticketing-platform/.env.example apps/ticketing-platform/.env.local
+cp apps/discovery-platform/.env.example apps/discovery-platform/.env.local
+```
 
 Required variables:
 - `NEXT_PUBLIC_API_URL` - Backend API base URL
+- `NEXT_PUBLIC_AUTH_COOKIE_NAME` - Auth token cookie name
+- `NEXT_PUBLIC_REFRESH_COOKIE_NAME` - Refresh token cookie name
 
 ## Pitfalls to Avoid
 
